@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<info>
+    <id>xee</id>
+    <name>Xee</name>
+    <description>Plugin pour Xee</description>
+    <icon>icon transport-car95</icon>
+    <licence>AGPL</licence>
+    <author>Ludovic SARAKHA</author>
+    <installation>Vérifiez bien que vous avez correctement configuré la partie Générale -> Administration -> Configuration puis reseaux, en effet il faut lors de l'association de Jeedom au compte Xee que votre Jeedom soit accessible de l'exterieur (ensuite cela n'est plus nécessaire)</installation>
+    <require>2.2</require>
+    <version>1.0</version>
+    <category>travel</category>
+</info>
+
