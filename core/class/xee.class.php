@@ -31,7 +31,7 @@ class xee extends eqLogic {
 		self::refresh_info();
 	}
 	
-	public static function cronHourly() {
+	public static function cron30() {
 		log::add('xee','debug','Mise à jour du token');
 		self::refresh_token();
 	}
