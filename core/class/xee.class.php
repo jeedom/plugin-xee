@@ -28,12 +28,8 @@ class xee extends eqLogic {
 
 	public static function cron15() {
 		log::add('xee','debug','Mise à jour des infos');
-		self::refresh_info();
-	}
-	
-	public static function cron30() {
-		log::add('xee','debug','Mise à jour du token');
 		self::refresh_token();
+		self::refresh_info();
 	}
 	
 	public static function createCars() {
@@ -133,6 +129,7 @@ class xee extends eqLogic {
                     'Authorization: Bearer ' . $_access_token)
 					);
 		$carsignals = $http->exec();
+		log::add('xee','debug',print_r($carsignals,true));
 		return $carsignals;
 	}
 	
@@ -143,6 +140,7 @@ class xee extends eqLogic {
                     'Authorization: Bearer ' . $_access_token)
 					);
 		$cartrips = $http->exec();
+		log::add('xee','debug',print_r($cartrips	,true));
 		return $cartrips;
 	}
 	
@@ -259,8 +257,8 @@ class xee extends eqLogic {
 					$satellitescmd->event($satellites);
 				}
 			}
+			$eqLogic->refreshWidget();
 		}
-		
 	}
 
 	/*     * *********************Methode d'instance************************* */
@@ -337,6 +335,28 @@ class xee extends eqLogic {
 		$refresh->setSubType('other');
 		$refresh->save();
 	}
+	
+	public function toHtml($_version = 'dashboard') {
+		$replace = $this->preToHtml($_version);
+		if (!is_array($replace)) {
+			return $replace;
+		}
+		$version = jeedom::versionAlias($_version);
+		foreach ($this->getCmd() as $cmd) {
+			if ($cmd->getType() == 'info') {
+				$replace['#' . $cmd->getLogicalId() . '_history#'] = '';
+				$replace['#' . $cmd->getLogicalId() . '#'] = $cmd->execCmd();
+				$replace['#' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
+				$replace['#' . $cmd->getLogicalId() . '_collectDate#'] = $cmd->getCollectDate();
+				if ($cmd->getIsHistorized() == 1) {
+					$replace['#' . $cmd->getLogicalId() . '_history#'] = 'history cursor';
+				}
+			} else {
+				$replace['#' . $cmd->getLogicalId() . '_id#'] = $cmd->getId();
+			}
+		}
+		return $this->postToHtml($_version, template_replace($replace, getTemplate('core', $version, 'xee', 'xee')));
+	}
 
 	/*     * **********************Getteur Setteur*************************** */
 
@@ -353,7 +373,14 @@ class xeeCmd extends cmd {
 		if ($this->getType() == '') {
 			return '';
 		}
-		xee::refresh_info();
+		$eqLogic = $this->getEqlogic();
+		$action = $this->getLogicalId();
+		switch ($action) {
+			case 'refresh':
+				xee::refresh_info();
+				return;
+				break;
+		}
 	}
 
 	/*     * **********************Getteur Setteur*************************** */
